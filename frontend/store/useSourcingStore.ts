@@ -394,6 +394,18 @@ export const useSourcingStore = create<SourcingState>((set, get) => ({
                   } : m)
                 }));
               } else if (packet.type === "tool_result") {
+                if (packet.result?.productGroups) {
+                  productGroups = packet.result.productGroups;
+                  set((s) => ({
+                    messages: s.messages.map(m => m.id === aiMessageId ? { 
+                      ...m, 
+                      activeToolCall: null,
+                      activeToolCalls: [],
+                      productGroups, 
+                      showViewProductsButton: true 
+                    } : m)
+                  }));
+                }
                 if (packet.result?.products) {
                   inlineProducts = packet.result.products;
                   set((s) => ({

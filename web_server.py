@@ -115,6 +115,37 @@ async def chat_endpoint(req: ChatRequest):
                 }
                 yield f"data: {json.dumps(tool_result_packet)}\n\n"
 
+            elif event_type == "product_groups":
+                groups = event_data
+                formatted_groups = []
+                for grp in groups:
+                    title = grp.get("title", "Products")
+                    formatted_prods = []
+                    for prod in grp.get("products", []):
+                        formatted_prods.append({
+                            "id": prod.get("id"),
+                            "name": prod.get("title"),
+                            "title": prod.get("title"),
+                            "price": prod.get("price_lkr", 0),
+                            "priceDisplay": f"Rs. {prod.get('price_lkr', 0):,.0f}",
+                            "imageUrl": prod.get("image"),
+                            "image": prod.get("image"),
+                            "url": prod.get("url"),
+                            "inStock": prod.get("available", True),
+                            "rating": prod.get("rating", 4.9)
+                        })
+                    formatted_groups.append({
+                        "title": title,
+                        "products": formatted_prods
+                    })
+                tool_result_packet = {
+                    "type": "tool_result",
+                    "result": {
+                        "productGroups": formatted_groups
+                    }
+                }
+                yield f"data: {json.dumps(tool_result_packet)}\n\n"
+
             elif event_type == "end":
                 yield f"data: {json.dumps({'type': 'end'})}\n\n"
 

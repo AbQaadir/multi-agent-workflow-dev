@@ -58,6 +58,8 @@ class KaprukaSwarmWorkflow:
 
         catalog_map: Dict[str, Dict[str, Any]] = {}
         accumulated_text_list: List[str] = []
+        query_products_map: Dict[str, List[Dict[str, Any]]] = {}
+        latest_query_title = "Product Search"
 
         async for event in events_async:
             if not hasattr(event, "content") or not event.content:
@@ -72,6 +74,14 @@ class KaprukaSwarmWorkflow:
                 if func_call:
                     fn_name = getattr(func_call, "name", "tool_call")
                     fn_args = getattr(func_call, "args", {})
+
+                    if isinstance(fn_args, dict):
+                        params = fn_args.get("params") or fn_args
+                        if isinstance(params, dict):
+                            q_val = params.get("q") or params.get("query")
+                            if q_val:
+                                latest_query_title = str(q_val).strip().title()
+
                     ts_event = {
                         "agent": "MCPToolset",
                         "detail": f"Executing tool `{fn_name}` with parameters: {json.dumps(fn_args)}",
@@ -100,6 +110,11 @@ class KaprukaSwarmWorkflow:
                                 raw_text = res_body["content"][0].get("text", "")
 
                         extracted_items = self._parse_mcp_raw_products(raw_text)
+                        if extracted_items:
+                            if latest_query_title not in query_products_map:
+                                query_products_map[latest_query_title] = []
+                            query_products_map[latest_query_title].extend(extracted_items)
+
                         for item in extracted_items:
                             catalog_map[item["id"]] = item
                             # Also key by title lowercase for fuzzy matching
@@ -116,15 +131,23 @@ class KaprukaSwarmWorkflow:
         # 2. ResponseAgent Synthesis Thought Step
         ts_final = {
             "agent": "ResponseAgent",
-            "detail": "Synthesized worker response. Matching exact products mentioned in model text.",
+            "detail": "Synthesized worker response. Formatting product groups and category grids.",
             "timestamp": datetime.now().strftime("%H:%M:%S")
         }
         yield {"event": "thought_step", "data": ts_final}
 
-        # 3. Exact Product Match Engine: Emit ONLY products mentioned in full_text
-        matched_products = self._filter_matched_products(full_text, catalog_map)
-        for prod in matched_products:
-            yield {"event": "product_card", "data": prod}
+        # 3. Product Group / Match Engine
+        if query_products_map and len(query_products_map) >= 1:
+            product_groups = [
+                {"title": title, "products": prods}
+                for title, prods in query_products_map.items()
+                if prods
+            ]
+            yield {"event": "product_groups", "data": product_groups}
+        else:
+            matched_products = self._filter_matched_products(full_text, catalog_map)
+            for prod in matched_products:
+                yield {"event": "product_card", "data": prod}
 
         # 4. Check for delivery info in text
         if "galle" in user_query.lower() or "galle" in full_text.lower():
