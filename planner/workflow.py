@@ -132,14 +132,38 @@ class KaprukaSwarmWorkflow:
                                 raw_text = res_body["content"][0].get("text", "")
 
                         extracted_items = self._parse_mcp_raw_products(raw_text)
-                        if extracted_items:
+
+                        # Emit Relevance Check Thought Step
+                        ts_val_start = {
+                            "agent": "ResponseValidator",
+                            "step": "validating_relevance",
+                            "tool_name": "kapruka_search_products",
+                            "term": current_query_title,
+                            "detail": f"Validating relevance of {len(extracted_items)} raw retrieved items for '{current_query_title}'...",
+                            "timestamp": datetime.now().strftime("%H:%M:%S")
+                        }
+                        yield {"event": "thought_step", "data": ts_val_start}
+
+                        # LLM/Keyword Relevance Validation Filter
+                        validated_items = self._validate_product_relevance(extracted_items, current_query_title, user_query)
+
+                        ts_val_end = {
+                            "agent": "ResponseValidator",
+                            "step": "validating_relevance",
+                            "tool_name": "kapruka_search_products",
+                            "term": current_query_title,
+                            "detail": f"Relevance check complete: Validated {len(validated_items)} top matches out of {len(extracted_items)} items for '{current_query_title}'.",
+                            "timestamp": datetime.now().strftime("%H:%M:%S")
+                        }
+                        yield {"event": "thought_step", "data": ts_val_end}
+
+                        if validated_items:
                             if current_query_title not in query_products_map:
                                 query_products_map[current_query_title] = []
-                            query_products_map[current_query_title].extend(extracted_items)
+                            query_products_map[current_query_title].extend(validated_items)
 
-                        for item in extracted_items:
+                        for item in validated_items:
                             catalog_map[item["id"]] = item
-                            # Also key by title lowercase for fuzzy matching
                             catalog_map[item["title"].lower()] = item
 
                 # C. LLM Text Chunk Event -> Stream Text Word-by-Word
@@ -285,3 +309,27 @@ class KaprukaSwarmWorkflow:
             matched = unique_items[:3]
 
         return matched
+
+    def _validate_product_relevance(self, items: List[Dict[str, Any]], term: str, user_query: str) -> List[Dict[str, Any]]:
+        """Validate & rank retrieved raw items against target category term and overall user query."""
+        if not items:
+            return []
+        
+        term_words = [w.lower() for w in re.findall(r"\w+", term) if len(w) > 2]
+        query_words = [w.lower() for w in re.findall(r"\w+", user_query) if len(w) > 2]
+        
+        scored_items = []
+        for item in items:
+            title = item.get("title", "").lower()
+            score = 0
+            for tw in term_words:
+                if tw in title:
+                    score += 3
+            for qw in query_words:
+                if qw in title:
+                    score += 1
+            scored_items.append((score, item))
+        
+        scored_items.sort(key=lambda x: x[0], reverse=True)
+        top_matches = [item for score, item in scored_items[:8]]
+        return top_matches if top_matches else items[:8]
