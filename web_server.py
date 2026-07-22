@@ -79,7 +79,9 @@ async def chat_endpoint(req: ChatRequest):
             if event_type == "thought_step":
                 step_packet = {
                     "type": "thought",
-                    "step": event_data.get("agent", "Agent"),
+                    "step": event_data.get("step", event_data.get("agent", "Agent")),
+                    "tool_name": event_data.get("tool_name"),
+                    "term": event_data.get("term"),
                     "content": event_data.get("detail", ""),
                     "status": "completed"
                 }

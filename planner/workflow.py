@@ -75,16 +75,35 @@ class KaprukaSwarmWorkflow:
                     fn_name = getattr(func_call, "name", "tool_call")
                     fn_args = getattr(func_call, "args", {})
 
+                    term_val = ""
                     if isinstance(fn_args, dict):
                         params = fn_args.get("params") or fn_args
                         if isinstance(params, dict):
-                            q_val = params.get("q") or params.get("query")
-                            if q_val:
-                                latest_query_title = str(q_val).strip().title()
+                            term_val = str(params.get("q") or params.get("query") or params.get("city") or params.get("order_id") or "").strip()
+                            if term_val:
+                                latest_query_title = term_val.title()
+
+                    # Map tool name to frontend step key
+                    step_id = "searching_kapruka"
+                    if "check_delivery" in fn_name or "list_delivery" in fn_name:
+                        step_id = "checking_delivery"
+                    elif "track_order" in fn_name:
+                        step_id = "tracking_order"
+                    elif "import_estimate" in fn_name:
+                        step_id = "calculating_import"
+                    elif "service_search" in fn_name:
+                        step_id = "finding_providers"
+                    elif "google_search" in fn_name:
+                        step_id = "google_search_query"
+
+                    display_term = term_val if term_val else fn_name.replace("kapruka_", "").replace("_", " ")
 
                     ts_event = {
                         "agent": "MCPToolset",
-                        "detail": f"Executing tool `{fn_name}` with parameters: {json.dumps(fn_args)}",
+                        "step": step_id,
+                        "tool_name": fn_name,
+                        "term": display_term,
+                        "detail": f"Executing {step_id.replace('_', ' ')} for '{display_term}'",
                         "timestamp": datetime.now().strftime("%H:%M:%S")
                     }
                     yield {"event": "thought_step", "data": ts_event}

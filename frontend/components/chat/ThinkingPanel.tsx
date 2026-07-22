@@ -58,13 +58,14 @@ function getToolBadge(toolName: string): string {
 
 // Extracts quote strings or keywords array from content text
 function extractQueryFromContent(content: string, fallback: string): string {
-  const match = content.match(/"([^"]+)"/);
-  if (match && match[1]) {
-    return match[1];
+  if (!content || content.trim() === "params") return fallback;
+  const match = content.match(/'([^']+)'/) || content.match(/"([^"]+)"/);
+  if (match && match[1] && match[1].trim() !== "params") {
+    return match[1].trim();
   }
   const bracketMatch = content.match(/Keywords:\s*\[([^\]]+)\]/);
   if (bracketMatch && bracketMatch[1]) {
-    return bracketMatch[1];
+    return bracketMatch[1].trim();
   }
   return fallback;
 }
@@ -191,11 +192,12 @@ export default function ThinkingPanel({
             {/* Render Capsule Rows for Steps */}
             {visibleSteps.map((step, idx) => {
               const badge = getStepBadge(step.step);
-              const query = extractQueryFromContent(step.content, activeQueryText);
-              const isSearchStep = step.step === "searching_kapruka";
-              const terms = (isSearchStep && step.terms && step.terms.length > 0)
+              const extracted = step.term && step.term.trim() !== "params"
+                ? step.term
+                : extractQueryFromContent(step.content, activeQueryText);
+              const terms = (step.terms && step.terms.length > 0)
                 ? step.terms
-                : [query];
+                : [extracted];
 
               return (
                 <div key={step._key || `${step.step}_${idx}`} className="space-y-2 animate-step-enter">
