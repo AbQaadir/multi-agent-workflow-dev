@@ -38,3 +38,13 @@ Migrate the full `SourcingDashboard` chat UI from `kapuruka-ai-shopping-agent` i
 ### Phase 11: Build & End-to-End Verification
 - [x] **Task 11.1**: Run `npm run build` in `frontend/` to ensure zero TypeScript or build errors.
 - [x] **Task 11.2**: Start `web_server.py` and `npm run dev`, test chat query in UI, verify thoughts and product cards render cleanly.
+
+---
+
+## Phase 12: Production-Grade Agent Response Formatting & Swarm Enhancement
+- [x] **Task 12.1**: Refactor `root_agent` system instruction in `swarm_agent/agent.py` to enforce scannable visual markdown hierarchy (`### Subheadings`, bold highlights, bullet points).
+- [x] **Task 12.2**: Implement side-by-side comparison table formatting instructions for user-selected products queries.
+- [x] **Task 12.3**: Update sub-agent prompts in `prompts/agent_prompts.py` (`RESPONSE_AGENT_INSTRUCTION`, `PRODUCT_AGENT_INSTRUCTION`, `RECOMMENDATION_AGENT_INSTRUCTION`) for rich markdown consistency.
+- [x] **Task 12.4**: Add proactive Call-to-Action (CTA) formatting rules guiding shoppers to city delivery checks and direct checkout.
+- [x] **Task 12.5**: Verify full stack with build tests and update `walkthrough.md`.
+

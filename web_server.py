@@ -64,6 +64,7 @@ async def chat_endpoint(req: ChatRequest):
     """Server-Sent Events (SSE) endpoint formatted specifically for SourcingDashboard Chat Workspace."""
     user_query = req.message or req.query or ""
     session_id = req.sessionId or req.session_id or req.userId or "default_session"
+    selected_products = req.selectedProductsList or []
     
     if session_id not in sessions:
         sessions[session_id] = SwarmState(session_id=session_id)
@@ -72,7 +73,7 @@ async def chat_endpoint(req: ChatRequest):
 
     async def event_generator():
         matched_products = []
-        async for event_item in workflow.execute_query_stream(user_query, state):
+        async for event_item in workflow.execute_query_stream(user_query, state, selected_products=selected_products):
             event_type = event_item.get("event", "message")
             event_data = event_item.get("data", {})
 
