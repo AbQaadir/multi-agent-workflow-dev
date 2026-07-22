@@ -1,13 +1,17 @@
+import asyncio
 import json
 import logging
+import os
 import re
 from datetime import datetime
 from typing import Dict, Any, List, AsyncGenerator
 
+from google import genai
 from google.genai import types
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from swarm_agent.agent import root_agent
+from config import MODEL_NAME
 
 from state.conversation_state import SwarmState, ShoppingIntent, ThoughtStep
 
@@ -144,15 +148,15 @@ class KaprukaSwarmWorkflow:
                         }
                         yield {"event": "thought_step", "data": ts_val_start}
 
-                        # LLM/Keyword Relevance Validation Filter
-                        validated_items = self._validate_product_relevance(extracted_items, current_query_title, user_query)
+                        # LLM Relevance Validation Filter using Gemini API
+                        validated_items = await self._validate_product_relevance_llm_async(extracted_items, current_query_title, user_query)
 
                         ts_val_end = {
                             "agent": "ResponseValidator",
                             "step": "validating_relevance",
                             "tool_name": "kapruka_search_products",
                             "term": current_query_title,
-                            "detail": f"Relevance check complete: Validated {len(validated_items)} top matches out of {len(extracted_items)} items for '{current_query_title}'.",
+                            "detail": f"LLM Relevance check complete: Approved {len(validated_items)} top matches out of {len(extracted_items)} raw items for '{current_query_title}'.",
                             "timestamp": datetime.now().strftime("%H:%M:%S")
                         }
                         yield {"event": "thought_step", "data": ts_val_end}
@@ -309,6 +313,51 @@ class KaprukaSwarmWorkflow:
             matched = unique_items[:3]
 
         return matched
+
+    async def _validate_product_relevance_llm_async(self, items: List[Dict[str, Any]], term: str, user_query: str) -> List[Dict[str, Any]]:
+        """LLM-powered async validation: Sends candidate product titles to Gemini API to filter strictly relevant product IDs."""
+        if not items:
+            return []
+        
+        try:
+            candidates = [{"id": item["id"], "title": item["title"]} for item in items if "id" in item and "title" in item]
+            
+            prompt = (
+                f"User Request: '{user_query}'\n"
+                f"Target Category/Search Term: '{term}'\n\n"
+                f"Candidate Products List (JSON):\n{json.dumps(candidates[:40])}\n\n"
+                "Task: Filter the candidates and select ONLY the product IDs that strictly match the target category and user request.\n"
+                "Return ONLY a JSON array of valid product IDs, e.g. [\"ID1\", \"ID2\", \"ID3\"]. Do not include markdown code blocks or explanatory text."
+            )
+            
+            loop = asyncio.get_running_loop()
+            
+            def _call_gemini():
+                api_key = os.getenv("GEMINI_API_KEY")
+                if not api_key:
+                    return []
+                genai_client = genai.Client(api_key=api_key)
+                response = genai_client.models.generate_content(
+                    model=MODEL_NAME,
+                    contents=prompt
+                )
+                text = response.text or ""
+                match = re.search(r"\[.*\]", text, re.DOTALL)
+                if match:
+                    return json.loads(match.group(0))
+                return []
+
+            approved_ids = await loop.run_in_executor(None, _call_gemini)
+            
+            if approved_ids and isinstance(approved_ids, list):
+                approved_set = set(str(pid).strip() for pid in approved_ids)
+                validated = [item for item in items if str(item.get("id")).strip() in approved_set]
+                if validated:
+                    return validated[:8]
+        except Exception as e:
+            logger.warning(f"LLM relevance validation failed, falling back to heuristic: {e}")
+        
+        return self._validate_product_relevance(items, term, user_query)
 
     def _validate_product_relevance(self, items: List[Dict[str, Any]], term: str, user_query: str) -> List[Dict[str, Any]]:
         """Validate & rank retrieved raw items against target category term and overall user query."""
