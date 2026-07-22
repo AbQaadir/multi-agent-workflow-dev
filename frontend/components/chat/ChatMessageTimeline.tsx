@@ -1205,7 +1205,7 @@ export default function ChatTimeline({
                       </div>
                     )}
 
-                    {/* Action bar: Copy + Regenerate + Reactions */}
+                    {/* Action bar: Copy + Regenerate */}
                     <div className="flex items-center gap-1.5 text-slate-400 select-none pt-1">
                       {/* Copy button for AI response */}
                       <button
@@ -1223,11 +1223,10 @@ export default function ChatTimeline({
                         </span>
                       </button>
 
-                      <div className="h-3 w-[1px] bg-slate-200"></div>
-
                       {/* Regenerate button - only on the last AI message when not generating */}
                       {idx === messages.length - 1 && !isGenerating && !msg.orderFlowStep && onRegenerate && (
                         <>
+                          <div className="h-3 w-[1px] bg-slate-200"></div>
                           <button
                             onClick={() => onRegenerate()}
                             className="p-1.5 hover:bg-slate-50 hover:text-[#402970] rounded-lg transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
@@ -1236,18 +1235,8 @@ export default function ChatTimeline({
                             <RefreshCw size={13} className="text-slate-400 hover:text-[#402970] transition-colors" />
                             <span className="text-slate-500 hover:text-[#402970] transition-colors">Regenerate</span>
                           </button>
-                          <div className="h-3 w-[1px] bg-slate-200"></div>
                         </>
                       )}
-                      <button className="p-1.5 hover:bg-slate-50 hover:text-[#402970] rounded-lg transition-colors cursor-pointer" title="Good response">
-                        <ThumbsUp size={14} className="text-slate-400 hover:text-[#402970] transition-colors" />
-                      </button>
-                      <button className="p-1.5 hover:bg-slate-50 hover:text-[#402970] rounded-lg transition-colors cursor-pointer" title="Bad response">
-                        <ThumbsDown size={14} className="text-slate-400 hover:text-[#402970] transition-colors" />
-                      </button>
-                      <button className="p-1.5 hover:bg-slate-50 hover:text-rose-600 rounded-lg transition-colors cursor-pointer" title="Report response">
-                        <Flag size={14} className="text-slate-400 hover:text-rose-600 transition-colors" />
-                      </button>
                     </div>
                   </div>
                 )}
