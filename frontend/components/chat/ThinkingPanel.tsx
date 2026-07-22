@@ -189,75 +189,75 @@ export default function ThinkingPanel({
               {summaryDescription}
             </p>
 
-            {/* Render Capsule Rows for Steps */}
-            {visibleSteps.map((step, idx) => {
-              const badge = getStepBadge(step.step);
+            {/* Render Capsule Rows for Steps (Deduplicated by Search Term) */}
+            {(() => {
+              const termMap = new Map<string, { term: string; badge: string; step: string; status: "running" | "completed"; logs: string[] }>();
 
-              // Determine if step is a genuine tool call with specific term(s)
-              const hasSpecificTerm = step.term && step.term.trim() !== "params" && step.term.trim().toLowerCase() !== activeQueryText.trim().toLowerCase();
-              const isToolStep = ["searching_kapruka", "checking_delivery", "tracking_order", "calculating_import", "finding_providers", "google_search_query"].includes(step.step);
+              visibleSteps.forEach((step) => {
+                const hasSpecificTerm = step.term && step.term.trim() !== "params" && step.term.trim().toLowerCase() !== activeQueryText.trim().toLowerCase();
+                const isToolStep = ["searching_kapruka", "validating_relevance", "checking_delivery", "tracking_order", "calculating_import", "finding_providers", "google_search_query"].includes(step.step);
 
-              const terms = (step.terms && step.terms.length > 0)
-                ? step.terms
-                : (hasSpecificTerm ? [step.term!] : (isToolStep ? [extractQueryFromContent(step.content, activeQueryText)] : []));
+                const termToUse = (step.terms && step.terms.length > 0)
+                  ? step.terms[0]
+                  : (hasSpecificTerm ? step.term! : (isToolStep ? extractQueryFromContent(step.content, activeQueryText) : null));
 
-              // If it's a general orchestrator step without specific terms, skip capsule rendering
-              if (!isToolStep && terms.length === 0) {
-                return null;
-              }
+                if (!termToUse) return;
+
+                const normTerm = termToUse.trim().toLowerCase();
+                const badge = getStepBadge(step.step);
+                const prev = termMap.get(normTerm);
+
+                const combinedLogs = [...(prev?.logs || []), ...(step.logs || [])];
+
+                termMap.set(normTerm, {
+                  term: termToUse,
+                  badge: step.step === "validating_relevance" ? "Relevance check" : (prev?.badge || badge),
+                  step: step.step,
+                  status: step.status,
+                  logs: combinedLogs,
+                });
+              });
+
+              const capsules = Array.from(termMap.values());
+              if (capsules.length === 0) return null;
 
               return (
-                <div key={step._key || `${step.step}_${idx}`} className="space-y-2 animate-step-enter">
-                  {/* Terminal Log View for this step */}
-                  {step.logs && step.logs.length > 0 && (
-                    <div className="mb-2 bg-[#1e1e2e] border border-slate-700/50 rounded-xl p-2.5 text-[11px] font-mono text-emerald-400 max-h-[140px] overflow-y-auto shadow-inner flex flex-col gap-1 w-full max-w-2xl">
-                      {step.logs.map((log, i) => (
-                        <div key={i} className="leading-snug break-words">
-                          <span className="text-slate-500 mr-2">›</span>
-                          {log}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Render capsule rows matching attached screenshot */}
-                  <div className="flex flex-col gap-2 max-w-3xl">
-                    {terms.map((termItem) => (
-                      <div
-                        key={termItem}
-                        className="bg-slate-100/70 hover:bg-slate-100/90 border border-slate-200/40 rounded-2xl md:rounded-full px-3.5 py-2 flex items-center justify-between gap-3 transition-all duration-200"
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          {/* Inner White Badge */}
-                          <div className="bg-white border border-slate-200/80 rounded-full px-3 py-1 flex items-center gap-1.5 text-[11px] font-bold text-slate-800 shadow-2xs shrink-0 select-none relative overflow-hidden">
-                            <Box size={13} className="text-[#402970] shrink-0" />
-                            <span>{badge}</span>
-                            {step.status === "running" && (
-                              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#402970] animate-pulse" />
-                            )}
-                          </div>
-
-                          {/* Query Term Text */}
-                          <span className="font-bold text-slate-800 text-[12px] truncate max-w-[200px] sm:max-w-[380px]">
-                            {termItem}
-                          </span>
+                <div className="flex flex-col gap-2 max-w-3xl">
+                  {capsules.map((cap) => (
+                    <div
+                      key={cap.term}
+                      className="bg-slate-100/70 hover:bg-slate-100/90 border border-slate-200/40 rounded-2xl md:rounded-full px-3.5 py-2 flex items-center justify-between gap-3 transition-all duration-200"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        {/* Inner White Badge */}
+                        <div className="bg-white border border-slate-200/80 rounded-full px-3 py-1 flex items-center gap-1.5 text-[11px] font-bold text-slate-800 shadow-2xs shrink-0 select-none relative overflow-hidden">
+                          <Box size={13} className="text-[#402970] shrink-0" />
+                          <span>{cap.badge}</span>
+                          {cap.status === "running" && (
+                            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#402970] animate-pulse" />
+                          )}
                         </div>
 
-                        {/* Right "View details" Action Link */}
-                        {onViewDetails && (
-                          <button
-                            onClick={() => onViewDetails(allProducts, termItem)}
-                            className="text-[11px] font-bold text-slate-700 hover:text-[#402970] underline underline-offset-2 cursor-pointer shrink-0 transition-colors"
-                          >
-                            View details
-                          </button>
-                        )}
+                        {/* Query Term Text */}
+                        <span className="font-bold text-slate-800 text-[12px] truncate max-w-[200px] sm:max-w-[380px]">
+                          {cap.term}
+                        </span>
                       </div>
-                    ))}
-                  </div>
+
+                      {/* Right "View details" Action Link */}
+                      {onViewDetails && (
+                        <button
+                          onClick={() => onViewDetails(allProducts, cap.term)}
+                          className="text-[11px] font-bold text-slate-700 hover:text-[#402970] underline underline-offset-2 cursor-pointer shrink-0 transition-colors"
+                        >
+                          View details
+                        </button>
+                      )}
+                    </div>
+                  ))}
                 </div>
               );
-            })}
+            })()}
 
             {/* Render Active Parallel/Single Running Tool Calls */}
             {isGenerating && (() => {

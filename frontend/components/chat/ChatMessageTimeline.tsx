@@ -981,8 +981,6 @@ export default function ChatTimeline({
                             return msg.text ? renderMessageTextBlock(msg.text, isLastAIResponse, true) : null;
                           }
 
-                          const parsedSections = parseMessageText(msg.text);
-
                           const unifiedGroups = msg.productGroups && msg.productGroups.length > 0
                             ? msg.productGroups
                             : (msg.inlineProducts && msg.inlineProducts.length > 0
@@ -990,42 +988,55 @@ export default function ChatTimeline({
                                 : []
                               );
 
+                          // Split message text into distinct paragraphs
+                          const paragraphs = msg.text
+                            .split("\n\n")
+                            .map(p => p.trim())
+                            .filter(Boolean);
+
                           const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
+                          // Map paragraphs to groups based on keyword matching
+                          const matchedParagraphIndices = new Set<number>();
+                          const groupParagraphMap = new Map<number, string>();
+
+                          unifiedGroups.forEach((group, gIdx) => {
+                            const groupNorm = norm(group.title);
+                            const titleKeywords = group.title.toLowerCase().split(" ").filter(w => w.length > 2);
+
+                            const pIdx = paragraphs.findIndex((p, idx) => {
+                              if (matchedParagraphIndices.has(idx)) return false;
+                              const pNorm = norm(p);
+                              return pNorm.includes(groupNorm) || titleKeywords.some(kw => pNorm.includes(kw));
+                            });
+
+                            if (pIdx !== -1) {
+                              matchedParagraphIndices.add(pIdx);
+                              groupParagraphMap.set(gIdx, paragraphs[pIdx]);
+                            }
+                          });
+
+                          // Unmatched paragraphs (e.g. general intro) remain at top
+                          const topIntroParagraphs = paragraphs.filter((_, idx) => !matchedParagraphIndices.has(idx));
+
                           return (
-                            <div className="space-y-4 w-full">
-                              {parsedSections
-                                .filter((s) => {
-                                  if (s.type !== "general") return false;
-                                  const rawIdx = parsedSections.indexOf(s);
-                                  const firstTaggedIdx = parsedSections.findIndex(p => p.type === "intro" || p.type === "details");
-                                  return firstTaggedIdx !== -1 && rawIdx < firstTaggedIdx;
-                                })
-                                .map((s) => {
-                                  const rawIdx = parsedSections.indexOf(s);
-                                  const isLast = rawIdx === parsedSections.length - 1;
-                                  return (
-                                    <div key={s.key} className="animate-fadeIn">
-                                      {renderMessageTextBlock(s.text, isLastAIResponse, isLast)}
-                                    </div>
-                                  );
-                                })}
+                            <div className="space-y-6 w-full">
+                              {/* 1. General Intro Paragraphs at Top */}
+                              {topIntroParagraphs.map((pText, pIdx) => (
+                                <div key={`top-intro-${pIdx}`} className="animate-fadeIn">
+                                  {renderMessageTextBlock(pText, isLastAIResponse, pIdx === topIntroParagraphs.length - 1 && unifiedGroups.length === 0)}
+                                </div>
+                              ))}
 
+                              {/* 2. Categorized Groups with Matching Intro Paragraph right above Grid */}
                               {unifiedGroups.map((group, gIdx) => {
-                                const groupNorm = norm(group.title);
-                                const introSec = parsedSections.find(s => s.type === "intro" && s.groupTitle && norm(s.groupTitle) === groupNorm);
-                                const introIdx = introSec ? parsedSections.indexOf(introSec) : -1;
-                                const isIntroLast = introIdx === parsedSections.length - 1;
-
-                                const detailsSec = parsedSections.find(s => s.type === "details" && s.groupTitle && norm(s.groupTitle) === groupNorm);
-                                const detailsIdx = detailsSec ? parsedSections.indexOf(detailsSec) : -1;
-                                const isDetailsLast = detailsIdx === parsedSections.length - 1;
+                                const groupParaText = groupParagraphMap.get(gIdx);
 
                                 return (
                                   <div key={`mixed-group-${gIdx}`} className="space-y-4">
-                                    {introSec && introSec.text.trim() && (
-                                      <div key={introSec.key} className="animate-fadeIn">
-                                        {renderMessageTextBlock(introSec.text, isLastAIResponse, isIntroLast)}
+                                    {groupParaText && (
+                                      <div key={`group-desc-${gIdx}`} className="animate-fadeIn">
+                                        {renderMessageTextBlock(groupParaText, isLastAIResponse, false)}
                                       </div>
                                     )}
 
@@ -1039,45 +1050,12 @@ export default function ChatTimeline({
                                       renderClosableToolCard={renderClosableToolCard}
                                     />
 
-                                    {detailsSec && detailsSec.text.trim() && (
-                                      <div key={detailsSec.key} className="animate-fadeIn">
-                                        {renderMessageTextBlock(detailsSec.text, isLastAIResponse, isDetailsLast)}
-                                      </div>
-                                    )}
-
                                     {gIdx < unifiedGroups.length - 1 && (
                                       <hr className="border-t border-slate-200/80 my-6" />
                                     )}
                                   </div>
                                 );
                               })}
-
-                              {/* 3. Concluding general or unmapped sections */}
-                              {parsedSections
-                                .filter((s) => {
-                                  if (s.type === "general") {
-                                    const firstTaggedIdx = parsedSections.findIndex(p => p.type === "intro" || p.type === "details");
-                                    const rawIdx = parsedSections.indexOf(s);
-                                    return firstTaggedIdx === -1 || rawIdx > parsedSections.map(p => p.type === "intro" || p.type === "details").lastIndexOf(true);
-                                  }
-                                  const title = s.groupTitle;
-                                  if (!title) return true;
-                                  return !unifiedGroups.some(g => norm(g.title) === norm(title));
-                                })
-                                .map((s) => {
-                                  const rawIdx = parsedSections.indexOf(s);
-                                  const isLast = rawIdx === parsedSections.length - 1;
-                                  return (
-                                    <div key={s.key} className="animate-fadeIn">
-                                      {s.type !== "general" && s.groupTitle && s.groupTitle.toLowerCase() !== "past orders" && (
-                                        <h5 className="text-[13px] font-extrabold text-slate-800 mt-3 mb-1.5 select-none">
-                                          {s.groupTitle} ({s.type})
-                                        </h5>
-                                      )}
-                                      {renderMessageTextBlock(s.text, isLastAIResponse, isLast)}
-                                    </div>
-                                  );
-                                })}
                             </div>
                           );
                         })()}
