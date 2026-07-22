@@ -1,0 +1,22 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Frontend build & node modules
+node_modules/
+.next/
+*.tsbuildinfo
+
+# Env files
+.env
+.env.local
+
+# OS files
+.DS_Store
