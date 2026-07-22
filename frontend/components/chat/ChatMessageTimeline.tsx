@@ -988,55 +988,59 @@ export default function ChatTimeline({
                                 : []
                               );
 
-                          // Split message text into distinct paragraphs
-                          const paragraphs = msg.text
-                            .split("\n\n")
-                            .map(p => p.trim())
+                          // Split message text into individual lines/bullets
+                          const rawLines = msg.text
+                            .split(/\n+/)
+                            .map(line => line.trim())
                             .filter(Boolean);
 
                           const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-                          // Map paragraphs to groups based on keyword matching
-                          const matchedParagraphIndices = new Set<number>();
-                          const groupParagraphMap = new Map<number, string>();
+                          // Map lines/bullets to groups based on keyword matching
+                          const matchedLineIndices = new Set<number>();
+                          const groupLineMap = new Map<number, string[]>();
 
                           unifiedGroups.forEach((group, gIdx) => {
                             const groupNorm = norm(group.title);
                             const titleKeywords = group.title.toLowerCase().split(" ").filter(w => w.length > 2);
 
-                            const pIdx = paragraphs.findIndex((p, idx) => {
-                              if (matchedParagraphIndices.has(idx)) return false;
-                              const pNorm = norm(p);
-                              return pNorm.includes(groupNorm) || titleKeywords.some(kw => pNorm.includes(kw));
+                            const matchingLines: string[] = [];
+                            rawLines.forEach((line, idx) => {
+                              if (matchedLineIndices.has(idx)) return;
+                              const lineNorm = norm(line);
+                              const isMatch = lineNorm.includes(groupNorm) || titleKeywords.some(kw => lineNorm.includes(kw));
+                              if (isMatch) {
+                                matchedLineIndices.add(idx);
+                                matchingLines.push(line);
+                              }
                             });
 
-                            if (pIdx !== -1) {
-                              matchedParagraphIndices.add(pIdx);
-                              groupParagraphMap.set(gIdx, paragraphs[pIdx]);
+                            if (matchingLines.length > 0) {
+                              groupLineMap.set(gIdx, matchingLines);
                             }
                           });
 
-                          // Unmatched paragraphs (e.g. general intro) remain at top
-                          const topIntroParagraphs = paragraphs.filter((_, idx) => !matchedParagraphIndices.has(idx));
+                          // Unmatched lines (e.g. general overall intro) remain at top
+                          const topIntroLines = rawLines.filter((_, idx) => !matchedLineIndices.has(idx));
 
                           return (
                             <div className="space-y-6 w-full">
-                              {/* 1. General Intro Paragraphs at Top */}
-                              {topIntroParagraphs.map((pText, pIdx) => (
-                                <div key={`top-intro-${pIdx}`} className="animate-fadeIn">
-                                  {renderMessageTextBlock(pText, isLastAIResponse, pIdx === topIntroParagraphs.length - 1 && unifiedGroups.length === 0)}
+                              {/* 1. General Intro Lines at Top */}
+                              {topIntroLines.length > 0 && (
+                                <div key="top-intro-lines" className="animate-fadeIn">
+                                  {renderMessageTextBlock(topIntroLines.join("\n"), isLastAIResponse, unifiedGroups.length === 0)}
                                 </div>
-                              ))}
+                              )}
 
-                              {/* 2. Categorized Groups with Matching Intro Paragraph right above Grid */}
+                              {/* 2. Categorized Groups with Matching Line/Bullet right above Grid */}
                               {unifiedGroups.map((group, gIdx) => {
-                                const groupParaText = groupParagraphMap.get(gIdx);
+                                const groupLines = groupLineMap.get(gIdx);
 
                                 return (
                                   <div key={`mixed-group-${gIdx}`} className="space-y-4">
-                                    {groupParaText && (
+                                    {groupLines && groupLines.length > 0 && (
                                       <div key={`group-desc-${gIdx}`} className="animate-fadeIn">
-                                        {renderMessageTextBlock(groupParaText, isLastAIResponse, false)}
+                                        {renderMessageTextBlock(groupLines.join("\n"), isLastAIResponse, false)}
                                       </div>
                                     )}
 
