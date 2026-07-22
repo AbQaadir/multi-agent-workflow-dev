@@ -996,7 +996,13 @@ export default function ChatTimeline({
 
                           const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-                          // Map lines/bullets to groups based on keyword matching
+                          // Helper to identify category bullet/detail lines (e.g. "For flowers..." or "• For shoes...")
+                          const isCategoryBulletLine = (lineStr: string) => {
+                            const t = lineStr.trim();
+                            return t.startsWith("•") || t.startsWith("-") || t.startsWith("*") || /^\s*For\s+[a-z0-9]+/i.test(t);
+                          };
+
+                          // Map category bullet lines to groups based on keyword matching
                           const matchedLineIndices = new Set<number>();
                           const groupLineMap = new Map<number, string[]>();
 
@@ -1007,6 +1013,9 @@ export default function ChatTimeline({
                             const matchingLines: string[] = [];
                             rawLines.forEach((line, idx) => {
                               if (matchedLineIndices.has(idx)) return;
+                              // Only match lines that are specific category bullet/detail lines
+                              if (!isCategoryBulletLine(line)) return;
+
                               const lineNorm = norm(line);
                               const isMatch = lineNorm.includes(groupNorm) || titleKeywords.some(kw => lineNorm.includes(kw));
                               if (isMatch) {
@@ -1020,7 +1029,7 @@ export default function ChatTimeline({
                             }
                           });
 
-                          // Unmatched lines (e.g. general overall intro) remain at top
+                          // Overall intro lines stay all the way at the top
                           const topIntroLines = rawLines.filter((_, idx) => !matchedLineIndices.has(idx));
 
                           return (
