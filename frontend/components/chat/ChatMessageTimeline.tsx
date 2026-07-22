@@ -1058,12 +1058,30 @@ export default function ChatTimeline({
                                       renderClosableToolCard={renderClosableToolCard}
                                     />
 
-                                    {/* Description text BELOW Product Grid Component */}
-                                    {groupLines && groupLines.length > 0 && (
-                                      <div key={`group-desc-${gIdx}`} className="animate-fadeIn">
-                                        {renderMessageTextBlock(groupLines.join("\n"), isLastAIResponse, false)}
-                                      </div>
-                                    )}
+                                    {/* Description text BELOW Product Grid Component (plain text without bullets or bold prefixes) */}
+                                    {groupLines && groupLines.length > 0 && (() => {
+                                      const cleanedText = groupLines
+                                        .map(line => {
+                                          let clean = line
+                                            .replace(/^[\s*•\-]+\s*/, "")
+                                            .replace(/^(\*\*)?For\s+[a-z0-9\s]+(\*\*)?,\s*/i, "")
+                                            .trim();
+                                          if (clean.length > 0) {
+                                            clean = clean.charAt(0).toUpperCase() + clean.slice(1);
+                                          }
+                                          return clean;
+                                        })
+                                        .filter(Boolean)
+                                        .join("\n");
+
+                                      if (!cleanedText) return null;
+
+                                      return (
+                                        <div key={`group-desc-${gIdx}`} className="animate-fadeIn">
+                                          {renderMessageTextBlock(cleanedText, isLastAIResponse, false)}
+                                        </div>
+                                      );
+                                    })()}
 
                                     {gIdx < unifiedGroups.length - 1 && (
                                       <hr className="border-t border-slate-200/80 my-6" />
