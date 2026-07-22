@@ -59,7 +59,7 @@ class KaprukaSwarmWorkflow:
         catalog_map: Dict[str, Dict[str, Any]] = {}
         accumulated_text_list: List[str] = []
         query_products_map: Dict[str, List[Dict[str, Any]]] = {}
-        latest_query_title = "Product Search"
+        call_queue: List[str] = []
 
         async for event in events_async:
             if not hasattr(event, "content") or not event.content:
@@ -80,8 +80,9 @@ class KaprukaSwarmWorkflow:
                         params = fn_args.get("params") or fn_args
                         if isinstance(params, dict):
                             term_val = str(params.get("q") or params.get("query") or params.get("city") or params.get("order_id") or "").strip()
-                            if term_val:
-                                latest_query_title = term_val.title()
+
+                    query_title = term_val.title() if term_val else "Product Search"
+                    call_queue.append(query_title)
 
                     # Map tool name to frontend step key
                     step_id = "searching_kapruka"
@@ -113,6 +114,8 @@ class KaprukaSwarmWorkflow:
                 if func_res:
                     res_name = getattr(func_res, "name", "")
                     res_body = getattr(func_res, "response", {})
+                    current_query_title = call_queue.pop(0) if call_queue else "Product Search"
+
                     ts_event = {
                         "agent": "KaprukaMCPServer",
                         "detail": f"Received data payload from `{res_name}`.",
@@ -130,9 +133,9 @@ class KaprukaSwarmWorkflow:
 
                         extracted_items = self._parse_mcp_raw_products(raw_text)
                         if extracted_items:
-                            if latest_query_title not in query_products_map:
-                                query_products_map[latest_query_title] = []
-                            query_products_map[latest_query_title].extend(extracted_items)
+                            if current_query_title not in query_products_map:
+                                query_products_map[current_query_title] = []
+                            query_products_map[current_query_title].extend(extracted_items)
 
                         for item in extracted_items:
                             catalog_map[item["id"]] = item

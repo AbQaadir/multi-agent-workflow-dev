@@ -192,12 +192,19 @@ export default function ThinkingPanel({
             {/* Render Capsule Rows for Steps */}
             {visibleSteps.map((step, idx) => {
               const badge = getStepBadge(step.step);
-              const extracted = step.term && step.term.trim() !== "params"
-                ? step.term
-                : extractQueryFromContent(step.content, activeQueryText);
+
+              // Determine if step is a genuine tool call with specific term(s)
+              const hasSpecificTerm = step.term && step.term.trim() !== "params" && step.term.trim().toLowerCase() !== activeQueryText.trim().toLowerCase();
+              const isToolStep = ["searching_kapruka", "checking_delivery", "tracking_order", "calculating_import", "finding_providers", "google_search_query"].includes(step.step);
+
               const terms = (step.terms && step.terms.length > 0)
                 ? step.terms
-                : [extracted];
+                : (hasSpecificTerm ? [step.term!] : (isToolStep ? [extractQueryFromContent(step.content, activeQueryText)] : []));
+
+              // If it's a general orchestrator step without specific terms, skip capsule rendering
+              if (!isToolStep && terms.length === 0) {
+                return null;
+              }
 
               return (
                 <div key={step._key || `${step.step}_${idx}`} className="space-y-2 animate-step-enter">
