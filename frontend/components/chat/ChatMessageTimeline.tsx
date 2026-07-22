@@ -1032,18 +1032,13 @@ export default function ChatTimeline({
                                 </div>
                               )}
 
-                              {/* 2. Categorized Groups with Matching Line/Bullet right above Grid */}
+                              {/* 2. Categorized Groups with Matching Line/Bullet right BELOW Grid */}
                               {unifiedGroups.map((group, gIdx) => {
                                 const groupLines = groupLineMap.get(gIdx);
 
                                 return (
                                   <div key={`mixed-group-${gIdx}`} className="space-y-4">
-                                    {groupLines && groupLines.length > 0 && (
-                                      <div key={`group-desc-${gIdx}`} className="animate-fadeIn">
-                                        {renderMessageTextBlock(groupLines.join("\n"), isLastAIResponse, false)}
-                                      </div>
-                                    )}
-
+                                    {/* Product Grid Component FIRST */}
                                     <ProductSection
                                       title={group.title}
                                       products={group.products}
@@ -1053,6 +1048,13 @@ export default function ChatTimeline({
                                       onBuyProduct={onBuyProduct}
                                       renderClosableToolCard={renderClosableToolCard}
                                     />
+
+                                    {/* Description text BELOW Product Grid Component */}
+                                    {groupLines && groupLines.length > 0 && (
+                                      <div key={`group-desc-${gIdx}`} className="animate-fadeIn">
+                                        {renderMessageTextBlock(groupLines.join("\n"), isLastAIResponse, false)}
+                                      </div>
+                                    )}
 
                                     {gIdx < unifiedGroups.length - 1 && (
                                       <hr className="border-t border-slate-200/80 my-6" />
