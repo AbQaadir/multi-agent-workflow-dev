@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 
-from config import MODEL_NAME
+from config import MODEL_NAME, ALLOWED_ORIGINS
 from state.conversation_state import SwarmState, RecipientInfo
 from planner.workflow import KaprukaSwarmWorkflow
 
@@ -18,9 +18,12 @@ app = FastAPI(
     version="2.1.0"
 )
 
+# Parse allowed origins from environment variable, separated by comma
+allowed_origins_list = [origin.strip() for origin in ALLOWED_ORIGINS.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for dev flexibility (e.g. localhost:3000)
+    allow_origins=allowed_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

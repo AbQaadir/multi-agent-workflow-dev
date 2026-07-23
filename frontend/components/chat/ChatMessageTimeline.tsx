@@ -232,10 +232,20 @@ function renderFormattedText(text: string) {
     if (part.startsWith("[") && part.includes("](")) {
       const match = part.match(/\[([^\]]+)\]\(([^)]+)\)/);
       if (match) {
+        let url = match[2];
+        // Basic sanitization: prevent javascript: and data: URIs for security
+        try {
+          const parsedUrl = new URL(url, "http://dummy.local");
+          if (parsedUrl.protocol === "javascript:" || parsedUrl.protocol === "data:" || parsedUrl.protocol === "vbscript:") {
+            url = "#";
+          }
+        } catch (e) {
+          url = "#";
+        }
         return (
           <a
             key={idx}
-            href={match[2]}
+            href={url}
             target="_blank"
             rel="noopener noreferrer"
             className="text-sky-600 hover:text-sky-800 underline font-bold transition-colors"
