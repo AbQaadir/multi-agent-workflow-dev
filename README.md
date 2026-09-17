@@ -1,4 +1,4 @@
-# Kapruka AI Mode Swarm Assistant
+# shopping agent
 
 An intelligent, multi-agent AI shopping assistant inspired by Alibaba's AI Mode. This project leverages the **Google ADK Swarm** architecture and **Model Context Protocol (MCP)** to provide a dynamic, highly interactive, and conversational e-commerce experience for Kapruka.
 
