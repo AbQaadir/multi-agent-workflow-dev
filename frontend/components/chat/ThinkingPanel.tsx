@@ -10,7 +10,7 @@ interface ThinkingStep {
   content: string;
   durationMs?: number;
   terms?: string[];  // baseLlmTerms: one capsule per user-intent term
-  term?: string;     // per-pipeline term (searching_kapruka, validating_relevance)
+  term?: string;     // per-pipeline term (searching_products, validating_relevance)
   _key?: string;     // internal dedup key (step__term)
   logs?: string[];   // real-time MCP tool logs
 }
@@ -30,7 +30,7 @@ interface ThinkingPanelProps {
 // Maps step keys to B2B capsule badge titles
 function getStepBadge(stepKey: string): string {
   const badgeMap: Record<string, string> = {
-    searching_kapruka:   "Product search",
+    searching_products:   "Product search",
     validating_relevance: "Relevance check",
     sme_filter:          "SME filtering",
     checking_delivery:   "Delivery check",
@@ -45,12 +45,12 @@ function getStepBadge(stepKey: string): string {
 // Maps tool call names to B2B capsule badge titles
 function getToolBadge(toolName: string): string {
   const toolMap: Record<string, string> = {
-    kapruka_search_products: "Product search",
-    kapruka_search_products_sme: "SME filtering",
-    kapruka_check_delivery: "Delivery check",
-    kapruka_track_order: "Order tracking",
-    kapruka_import_estimate: "Import calculator",
-    kapruka_service_search: "Service search",
+    search_products: "Product search",
+    search_products_sme: "SME filtering",
+    check_delivery: "Delivery check",
+    track_order: "Order tracking",
+    import_estimate: "Import calculator",
+    service_search: "Service search",
     google_search: "Google Search",
   };
   return toolMap[toolName] || "Product search";
@@ -76,16 +76,16 @@ function getToolCallQuery(toolName: string, args: unknown): string | null {
   const params = (args as Record<string, unknown>).params || args;
   const obj = params as Record<string, unknown>;
   
-  if (toolName === "kapruka_search_products" || toolName === "kapruka_search_products_sme") {
+  if (toolName === "search_products" || toolName === "search_products_sme") {
     return (obj.query || obj.q || null) as string | null;
   }
-  if (toolName === "kapruka_check_delivery" || toolName === "kapruka_list_delivery_cities" || toolName === "kapruka_service_search") {
+  if (toolName === "check_delivery" || toolName === "list_delivery_cities" || toolName === "service_search") {
     return (obj.city || obj.query || null) as string | null;
   }
-  if (toolName === "kapruka_track_order") {
+  if (toolName === "track_order") {
     return (obj.order_id || obj.order_number || null) as string | null;
   }
-  if (toolName === "kapruka_import_estimate") {
+  if (toolName === "import_estimate") {
     return (obj.url || null) as string | null;
   }
   return null;
@@ -195,7 +195,7 @@ export default function ThinkingPanel({
 
               visibleSteps.forEach((step) => {
                 const hasSpecificTerm = step.term && step.term.trim() !== "params" && step.term.trim().toLowerCase() !== activeQueryText.trim().toLowerCase();
-                const isToolStep = ["searching_kapruka", "validating_relevance", "checking_delivery", "tracking_order", "calculating_import", "finding_providers", "google_search_query"].includes(step.step);
+                const isToolStep = ["searching_products", "validating_relevance", "checking_delivery", "tracking_order", "calculating_import", "finding_providers", "google_search_query"].includes(step.step);
 
                 const termToUse = (step.terms && step.terms.length > 0)
                   ? step.terms[0]

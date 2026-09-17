@@ -534,7 +534,7 @@ wheels = [
 ]
 
 [[package]]
-name = "kapruka-agent-v2"
+name = "multi-agent-workflow"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

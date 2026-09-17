@@ -1,12 +1,12 @@
-# shopping agent
+# Multi-Agent Workflow
 
-An intelligent, multi-agent AI shopping assistant inspired by Alibaba's AI Mode. This project leverages the **Google ADK Swarm** architecture and **Model Context Protocol (MCP)** to provide a dynamic, highly interactive, and conversational e-commerce experience for Kapruka.
+An intelligent, multi-agent AI shopping assistant inspired by modern AI Mode workflows. This project leverages the **Google ADK Swarm** architecture and **Model Context Protocol (MCP)** to provide a dynamic, highly interactive, and conversational e-commerce experience.
 
 ## 🌟 Key Features
 
 - **Swarm Agent Architecture**: Utilizes a robust multi-agent system where a `root_agent` orchestrates specialized sub-agents (e.g., Sourcing, Checkout, Planning) to handle complex user intents.
 - **Rich Interactive UI**: A Next.js-powered chat interface that renders rich markdown, side-by-side product comparisons, proactive call-to-actions, and interactive components within the chat timeline.
-- **Real-Time Data with MCP**: Integrates directly with Kapruka's live catalog via MCP, ensuring product recommendations are accurate, validated, and highly relevant (no mocked data).
+- **Real-Time Data with MCP**: Integrates directly with live catalogs via MCP, ensuring product recommendations are accurate, validated, and highly relevant (no mocked data).
 - **Context-Aware Shopping**: The backend dynamically injects the user's UI state (e.g., selected products) into the LLM context, allowing the agent to answer questions, compare, or checkout specifically for the items the user has chosen.
 - **Integrated Checkout & Maps**: Seamless checkout flow with Google Maps integration for delivery address selection and validation.
 
@@ -86,4 +86,4 @@ The application will be available at `http://localhost:3000`.
 - **Tailwind CSS v4** for modern styling
 
 ## 📜 License
-*Proprietary / Closed Source* - Internal Kapruka Project.
+MIT License / Multi-Agent Workflow Project.

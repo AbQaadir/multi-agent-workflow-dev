@@ -1,4 +1,4 @@
-export const KAPRUKA_CITIES = [
+export const DELIVERY_CITIES = [
   "Agalawatta",
   "Agunukolapelassa",
   "Ahangama",
@@ -332,6 +332,6 @@ export const KAPRUKA_CITIES = [
   "Yatiyanthota"
 ] as const;
 
-export type KaprukaCity = typeof KAPRUKA_CITIES[number];
+export type DeliveryCity = typeof DELIVERY_CITIES[number];
 
-export const KAPRUKA_CITIES_SET = new Set<string>(KAPRUKA_CITIES);
+export const DELIVERY_CITIES_SET = new Set<string>(DELIVERY_CITIES);

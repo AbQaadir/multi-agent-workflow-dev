@@ -25,7 +25,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewChat, onSelectSuggestion 
         </div>
         <div className="flex flex-col">
           <h1 className="font-bold text-lg text-slate-100 flex items-center gap-1">
-            Kapruka <span className="text-orange-500">AI</span>
+            Multi-Agent <span className="text-orange-500">Workflow</span>
           </h1>
           <span className="text-xs text-slate-400">Swarm Commerce Assistant</span>
         </div>
@@ -67,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewChat, onSelectSuggestion 
         </div>
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/40">
           <Server className="w-4 h-4 text-blue-400" />
-          <span>Kapruka Remote MCP</span>
+          <span>Multi-Agent Workflow MCP</span>
         </div>
       </div>
     </aside>

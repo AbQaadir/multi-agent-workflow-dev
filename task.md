@@ -1,7 +1,7 @@
 # SourcingDashboard UI Migration & Backend Alignment Task Tracker
 
 ## Overview
-Migrate the full `SourcingDashboard` chat UI from `kapuruka-ai-shopping-agent` into `kapruka-agent-v2`, preserving exact styling while completely stripping out authentication (Supabase). Also align the Python FastAPI SSE streaming responses to yield the structured JSON packets expected by the frontend.
+Migrate the full `SourcingDashboard` chat UI into `multi-agent-workflow`, preserving exact styling while completely stripping out authentication (Supabase). Also align the Python FastAPI SSE streaming responses to yield the structured JSON packets expected by the frontend.
 
 ---
 
@@ -12,7 +12,7 @@ Migrate the full `SourcingDashboard` chat UI from `kapuruka-ai-shopping-agent` i
 - [x] **Task 7.2**: Verify `package.json` and ensure compatibility with Next.js & React 19.
 
 ### Phase 8: Assets, Design Tokens & Core Layout Setup
-- [x] **Task 8.1**: Copy SVG assets (`world.svg`, `person.svg`, `kapruka-logo.jpg`, etc.) from source `frontend/public/` to `frontend/public/`.
+- [x] **Task 8.1**: Copy SVG assets (`world.svg`, `person.svg`, `workflow-logo.jpg`, etc.) from source `frontend/public/` to `frontend/public/`.
 - [x] **Task 8.2**: Copy `globals.css` with exact Tailwind v4 variables, keyframe animations, and custom scrollbars.
 - [x] **Task 8.3**: Copy `types/sourcing.ts` to `frontend/types/sourcing.ts` for full TypeScript definitions.
 - [x] **Task 8.4**: Update `frontend/app/layout.tsx` to include `Plus_Jakarta_Sans` font and `SourcingInitializer` (without AuthProvider).

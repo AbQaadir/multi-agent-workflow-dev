@@ -10,11 +10,11 @@ from typing import Optional, Dict, Any, List
 
 from config import MODEL_NAME
 from state.conversation_state import SwarmState, RecipientInfo
-from planner.workflow import KaprukaSwarmWorkflow
+from planner.workflow import MultiAgentWorkflow
 
 app = FastAPI(
-    title="Kapruka AI Mode Swarm Assistant",
-    description="Alibaba AI Mode inspired Web Interface with SSE Streaming powered by Google ADK Swarm & Kapruka Remote MCP.",
+    title="Multi-Agent Workflow Swarm Assistant",
+    description="AI Mode inspired Web Interface with SSE Streaming powered by Google ADK Swarm & Multi-Agent Workflow MCP.",
     version="2.1.0"
 )
 
@@ -27,7 +27,7 @@ app.add_middleware(
 )
 
 
-workflow = KaprukaSwarmWorkflow()
+workflow = MultiAgentWorkflow()
 sessions: Dict[str, SwarmState] = {}
 
 # Ensure static directory exists
@@ -170,13 +170,13 @@ async def checkout_endpoint(req: CheckoutRequest):
     state.gift_message = req.gift_message
     state.validation_errors = []
     state.order_result = {
-        "order_id": "KP-998877",
+        "order_id": "ORD-998877",
         "status": "CREATED",
-        "payment_url": "https://mcp.kapruka.com/pay/KP-998877",
+        "payment_url": "https://pay.multiagentworkflow.com/pay/ORD-998877",
         "amount_lkr": 7500.0,
         "delivery_city": req.city
     }
-    state.final_response = f"🎉 Order reference **KP-998877** has been created successfully for **{req.name}** in **{req.city}**!"
+    state.final_response = f"🎉 Order reference **ORD-998877** has been created successfully for **{req.name}** in **{req.city}**!"
 
     return JSONResponse(content=state.model_dump())
 

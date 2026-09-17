@@ -63,8 +63,8 @@ export default function GlobalHeader({ onNewSourcing, isCompact = false, onMenuT
           >
             <div className="flex items-center">
               <img
-                src="/kapruka-logo.jpg"
-                alt="Kapruka.com Logo"
+                src="/workflow-logo.jpg"
+                alt="Multi-Agent Workflow Logo"
                 className="h-8 sm:h-10 w-auto object-contain rounded-md"
               />
             </div>

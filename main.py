@@ -3,17 +3,17 @@ import logging
 from dotenv import load_dotenv
 
 from state.conversation_state import SwarmState
-from planner.workflow import KaprukaSwarmWorkflow
+from planner.workflow import MultiAgentWorkflow
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
-logger = logging.getLogger("KaprukaSwarmMain")
+logger = logging.getLogger("MultiAgentWorkflowMain")
 
 async def main():
     load_dotenv()
-    logger.info("Initializing Kapruka Multi-Agent Swarm System...")
+    logger.info("Initializing Multi-Agent Workflow Swarm System...")
 
-    workflow = KaprukaSwarmWorkflow()
+    workflow = MultiAgentWorkflow()
     session_state = SwarmState(session_id="test_session_001")
 
     test_queries = [

@@ -1,3 +1,3 @@
-from .workflow import KaprukaSwarmWorkflow
+from .workflow import MultiAgentWorkflow
 
-__all__ = ["KaprukaSwarmWorkflow"]
+__all__ = ["MultiAgentWorkflow"]

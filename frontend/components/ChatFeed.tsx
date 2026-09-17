@@ -24,7 +24,7 @@ export const ChatFeed: React.FC<ChatFeedProps> = ({ messages, onSelectProduct })
           <ShoppingBag className="w-8 h-8" />
         </div>
         <h2 className="text-xl font-bold text-slate-100 mb-2">
-          What can I help you find on Kapruka today?
+          What can I help you find today?
         </h2>
         <p className="text-sm text-slate-400 max-w-md leading-relaxed">
           Search Sri Lanka cakes, flowers, chocolates, check city delivery fees, or track order statuses using our multi-agent swarm.

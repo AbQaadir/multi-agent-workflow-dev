@@ -120,12 +120,12 @@ export const useSourcingStore = create<SourcingState>((set, get) => ({
   country: "LK",
   setCountry: (c: string) => {
     set({ country: c });
-    if (typeof window !== "undefined") Cookies.set("kapruka_country", c, { expires: 365 });
+    if (typeof window !== "undefined") Cookies.set("workflow_country", c, { expires: 365 });
   },
   currency: "LKR",
   setCurrency: (c: string) => {
     set({ currency: c });
-    if (typeof window !== "undefined") Cookies.set("kapruka_currency", c, { expires: 365 });
+    if (typeof window !== "undefined") Cookies.set("workflow_currency", c, { expires: 365 });
   },
 
   // --- Products & Cart ---
@@ -413,7 +413,7 @@ export const useSourcingStore = create<SourcingState>((set, get) => ({
                       ...m, 
                       activeToolCall: null,
                       activeToolCalls: [],
-                      inlineProductsHeader: isComparisonQuery ? "Compared Products" : "Kapruka Products", 
+                      inlineProductsHeader: isComparisonQuery ? "Compared Products" : "Sourced Products", 
                       inlineProducts, 
                       showViewProductsButton: true 
                     } : m)
@@ -436,7 +436,7 @@ export const useSourcingStore = create<SourcingState>((set, get) => ({
         text: fullResponseText,
         timestamp: new Date(),
         thinkingSteps: accumulatedSteps,
-        inlineProductsHeader: inlineProducts.length > 0 ? "Kapruka Products" : undefined,
+        inlineProductsHeader: inlineProducts.length > 0 ? "Sourced Products" : undefined,
         inlineProducts: inlineProducts.length > 0 ? inlineProducts : undefined,
         productGroups: productGroups.length > 0 ? productGroups : undefined,
         showViewProductsButton: inlineProducts.length > 0,
@@ -506,7 +506,7 @@ export const useSourcingStore = create<SourcingState>((set, get) => ({
     } else {
       updatedCart.push({
         id: product.id,
-        name: product.title || product.name || "Kapruka Product",
+        name: product.title || product.name || "Product",
         price: product.price || 0,
         quantity: 1,
         imageUrl: product.imageUrl || product.image,
@@ -534,7 +534,7 @@ export const useSourcingStore = create<SourcingState>((set, get) => ({
       } else {
         updatedCart.push({
           id: String(prod.id),
-          name: prod.title || prod.name || "Kapruka Product",
+          name: prod.title || prod.name || "Product",
           price: prod.price || 0,
           quantity: 1,
           imageUrl: prod.imageUrl || prod.image,
@@ -567,10 +567,10 @@ export function useSourcingActions() {
   const [guestId, setGuestId] = useState("");
 
   useEffect(() => {
-    let id = localStorage.getItem("kapruka_guest_uuid");
+    let id = localStorage.getItem("workflow_guest_uuid");
     if (!id) {
       id = crypto.randomUUID();
-      localStorage.setItem("kapruka_guest_uuid", id);
+      localStorage.setItem("workflow_guest_uuid", id);
     }
     setGuestId(id);
   }, []);

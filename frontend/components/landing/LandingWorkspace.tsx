@@ -195,8 +195,8 @@ export default function LandingWorkspace({ onSend, onSuggestionClick }: LandingW
       <div className="hidden md:flex absolute top-6 left-6 items-center z-20">
         <div className="border border-slate-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.04)] rounded-xl overflow-hidden flex items-center justify-center transition-all duration-300 hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 select-none bg-white">
           <img
-            src="/kapruka-logo.jpg"
-            alt="Kapruka.com Logo"
+            src="/workflow-logo.jpg"
+            alt="Multi-Agent Workflow Logo"
             className="h-12 w-auto object-contain"
           />
         </div>
@@ -228,8 +228,8 @@ export default function LandingWorkspace({ onSend, onSuggestionClick }: LandingW
             <Menu size={20} />
           </button>
           <img
-            src="/kapruka-logo.jpg"
-            alt="Kapruka Logo"
+            src="/workflow-logo.jpg"
+            alt="Multi-Agent Workflow Logo"
             className="h-8 w-auto object-contain rounded-md select-none"
           />
         </div>
@@ -263,7 +263,7 @@ export default function LandingWorkspace({ onSend, onSuggestionClick }: LandingW
         {/* Welcome Section */}
         <div className="flex flex-col items-center justify-center text-center w-full gap-2 pt-10 pb-0 select-none animate-fadeIn">
           <h1 className="text-2xl sm:text-4xl lg:text-[40px] font-extrabold tracking-tight leading-tight bg-gradient-to-r from-purple-700 via-[#402970] to-indigo-700 bg-clip-text text-transparent max-w-4xl px-2">
-            Just Chat to Shop Kapruka
+            Just Chat with Multi-Agent Workflow
           </h1>
         </div>
 
@@ -291,7 +291,7 @@ export default function LandingWorkspace({ onSend, onSuggestionClick }: LandingW
             <div className="shrink-0 w-6 h-6 rounded-full overflow-hidden shadow-xs select-none mt-1 flex items-center justify-center">
               <img
                 src="/image.png"
-                alt="Kapruka AI Avatar"
+                alt="Multi-Agent Workflow Avatar"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -299,7 +299,7 @@ export default function LandingWorkspace({ onSend, onSuggestionClick }: LandingW
 
               {/* Text Bubble */}
               <div className="px-4 py-3.5 bg-white border border-slate-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.015)] rounded-2xl rounded-tl-xs leading-relaxed font-semibold max-w-full text-slate-800 text-[13px]">
-                Okay, this is Kapruka Personal Shopping Agent, so we offer a bunch of services in a conversational way. Here are the core services you can access:
+                Okay, this is Multi-Agent Workflow Shopping Agent, so we offer a bunch of services in a conversational way. Here are the core services you can access:
               </div>
 
               {/* Product Carousel Mock */}
@@ -518,7 +518,7 @@ export default function LandingWorkspace({ onSend, onSuggestionClick }: LandingW
 
       <div className="w-full pb-2 pt-3 px-4 shrink-0 select-none border-t border-slate-100/50 bg-[#fbfbfe] z-20">
         <p className="text-[10px] text-center text-slate-400 font-medium leading-none">
-          Kapuruka Sourcing AI may display inaccurate info, so double-check responses.
+          Multi-Agent Workflow Sourcing AI may display inaccurate info, so double-check responses.
         </p>
       </div>
 

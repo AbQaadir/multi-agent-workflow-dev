@@ -19,10 +19,10 @@ export function SourcingInitializer({ children }: { children: React.ReactNode })
 
   // 1. Manage Guest ID
   useEffect(() => {
-    let id = localStorage.getItem("kapruka_guest_uuid");
+    let id = localStorage.getItem("workflow_guest_uuid");
     if (!id) {
       id = crypto.randomUUID();
-      localStorage.setItem("kapruka_guest_uuid", id);
+      localStorage.setItem("workflow_guest_uuid", id);
     }
     setGuestId(id);
   }, []);
@@ -32,8 +32,8 @@ export function SourcingInitializer({ children }: { children: React.ReactNode })
   // 2. Location and Currency Detection (IP based)
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const persistedCountry = Cookies.get("kapruka_country");
-      const persistedCurrency = Cookies.get("kapruka_currency");
+      const persistedCountry = Cookies.get("workflow_country");
+      const persistedCurrency = Cookies.get("workflow_currency");
 
       if (!persistedCountry && !persistedCurrency) {
         const detectLocation = async () => {

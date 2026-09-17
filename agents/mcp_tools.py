@@ -1,16 +1,17 @@
+import os
 from typing import Optional, List
 from google.adk.tools.mcp_tool import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
 from mcp import StdioServerParameters
 
-KAPRUKA_MCP_ENDPOINT = "https://mcp.kapruka.com/mcp"
+WORKFLOW_MCP_ENDPOINT = os.getenv("MCP_ENDPOINT", "https://mcp.multiagentworkflow.com/mcp")
 
-def get_kapruka_mcp_toolset(tool_filter: Optional[List[str]] = None) -> McpToolset:
-    """Instantiate McpToolset connected to the Kapruka remote MCP server over npx mcp-remote."""
+def get_workflow_mcp_toolset(tool_filter: Optional[List[str]] = None) -> McpToolset:
+    """Instantiate McpToolset connected to the Multi-Agent Workflow remote MCP server over npx mcp-remote."""
     connection_params = StdioConnectionParams(
         server_params=StdioServerParameters(
             command="npx",
-            args=["-y", "mcp-remote", KAPRUKA_MCP_ENDPOINT],
+            args=["-y", "mcp-remote", WORKFLOW_MCP_ENDPOINT],
         ),
         timeout=15,
     )

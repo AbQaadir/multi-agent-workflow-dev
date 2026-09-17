@@ -4,7 +4,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { Home, Briefcase, Tag, MapPin, Star, Pencil, Trash2, CheckCircle2, ChevronRight, Loader2, Plus, X } from "lucide-react";
 import type { UserAddress, CitySuggestion } from "@/types/sourcing";
-import { KAPRUKA_CITIES, KAPRUKA_CITIES_SET } from "@/constants/cities";
+import { DELIVERY_CITIES, DELIVERY_CITIES_SET } from "@/constants/cities";
 
 const MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 const SRI_LANKA_CENTER = { lat: 7.8731, lng: 80.7718 };
@@ -69,7 +69,7 @@ function AddressForm({ initial, onSave, onCancel, isSaving }: AddressFormProps) 
     setCity(val);
     if (val.trim().length >= 1) {
       const searchVal = val.toLowerCase();
-      const filtered = KAPRUKA_CITIES.filter((c) =>
+      const filtered = DELIVERY_CITIES.filter((c) =>
         c.toLowerCase().includes(searchVal)
       )
       .slice(0, 10)
@@ -161,8 +161,8 @@ function AddressForm({ initial, onSave, onCancel, isSaving }: AddressFormProps) 
     }
     setCustomLabelError("");
 
-    if (!city.trim() || !KAPRUKA_CITIES_SET.has(city)) {
-      alert("Please select a valid Kapruka delivery city from the suggestions dropdown.");
+    if (!city.trim() || !DELIVERY_CITIES_SET.has(city)) {
+      alert("Please select a valid delivery city from the suggestions dropdown.");
       return;
     }
     const addr: UserAddress = {
@@ -286,7 +286,7 @@ function AddressForm({ initial, onSave, onCancel, isSaving }: AddressFormProps) 
           onBlur={() => {
             setTimeout(() => {
               setCity(prev => {
-                if (prev && !KAPRUKA_CITIES_SET.has(prev)) return "";
+                if (prev && !DELIVERY_CITIES_SET.has(prev)) return "";
                 return prev;
               });
             }, 150);
@@ -345,7 +345,7 @@ function AddressForm({ initial, onSave, onCancel, isSaving }: AddressFormProps) 
         </button>
         <button
           onClick={handleSubmit}
-          disabled={isSaving || !addressText.trim() || !city.trim() || recipientPhone.length !== 9 || !KAPRUKA_CITIES_SET.has(city) || (addressType === "custom" && (customLabel.trim() === "" || customLabel.trim().toLowerCase() === "home" || customLabel.trim().toLowerCase() === "work"))}
+          disabled={isSaving || !addressText.trim() || !city.trim() || recipientPhone.length !== 9 || !DELIVERY_CITIES_SET.has(city) || (addressType === "custom" && (customLabel.trim() === "" || customLabel.trim().toLowerCase() === "home" || customLabel.trim().toLowerCase() === "work"))}
           className="flex-1 bg-[#402970] hover:bg-[#33205a] disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-xs py-2.5 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1 shadow-sm"
         >
           {isSaving ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle2 size={12} />}

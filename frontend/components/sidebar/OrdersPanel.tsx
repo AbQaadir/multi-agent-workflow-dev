@@ -34,7 +34,7 @@ interface OrderData {
   userId: string;
   status: string;
   totalLKR: number;
-  kaprukaRef: string | null;
+  trackingRef: string | null;
   deliveryDate: string | null;
   personalMessage: string | null;
   createdAt: string;
@@ -172,7 +172,7 @@ function OrderCard({
   trackingState,
 }: {
   order: OrderData;
-  onTrack: (kaprukaRef: string, orderId: string) => void;
+  onTrack: (trackingRef: string, orderId: string) => void;
   trackingState?: TrackingResult | "loading" | "error";
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -189,8 +189,8 @@ function OrderCard({
   });
 
   const handleTrackClick = () => {
-    if (order.kaprukaRef) {
-      onTrack(order.kaprukaRef, order.id);
+    if (order.trackingRef) {
+      onTrack(order.trackingRef, order.id);
       setExpanded(true);
     }
   };
@@ -200,7 +200,7 @@ function OrderCard({
       <div className="flex items-center justify-between border-b border-slate-100 pb-3">
         <div className="flex items-center gap-2">
           <span className="text-[10px] sm:text-xs font-mono font-bold text-slate-500 bg-slate-50 border border-slate-200/80 px-2 py-0.5 rounded-md">
-            {order.kaprukaRef ? `#${order.kaprukaRef}` : `#${order.id.slice(0, 8).toUpperCase()}`}
+            {order.trackingRef ? `#${order.trackingRef}` : `#${order.id.slice(0, 8).toUpperCase()}`}
           </span>
           <span className="text-[10px] text-slate-300 font-bold">•</span>
           <span className="text-[10px] sm:text-[11px] font-bold text-slate-400">Ordered {formattedCreated}</span>
@@ -262,7 +262,7 @@ function OrderCard({
         </div>
       </div>
 
-      {!isDelivered && order.kaprukaRef && (
+      {!isDelivered && order.trackingRef && (
         <div className="pt-3 border-t border-slate-100/60 flex items-center justify-between">
           <button
             onClick={handleTrackClick}
@@ -331,10 +331,10 @@ export default function OrdersPanel({ isOpen, onClose }: OrdersPanelProps) {
     }
   }, [isOpen, fetchOrders]);
 
-  const handleTrack = async (kaprukaRef: string, orderId: string) => {
+  const handleTrack = async (trackingRef: string, orderId: string) => {
     setTrackingData((prev) => ({ ...prev, [orderId]: "loading" }));
     try {
-      const res = await fetch(getApiUrl(`/api/track?kaprukaRef=${encodeURIComponent(kaprukaRef)}`));
+      const res = await fetch(getApiUrl(`/api/track?trackingRef=${encodeURIComponent(trackingRef)}`));
       if (!res.ok) throw new Error("Not found");
       const data: TrackingResult = await res.json();
       setTrackingData((prev) => ({ ...prev, [orderId]: data }));

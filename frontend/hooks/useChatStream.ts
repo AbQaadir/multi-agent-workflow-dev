@@ -113,7 +113,7 @@ export function useChatStream() {
           msg.id === assistantMsgId
             ? {
                 ...msg,
-                text: '⚠️ Unable to connect to Kapruka Swarm backend on http://localhost:8000.',
+                text: '⚠️ Unable to connect to Multi-Agent Workflow backend on http://localhost:8000.',
                 isStreaming: false,
               }
             : msg

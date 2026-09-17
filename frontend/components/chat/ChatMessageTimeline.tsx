@@ -937,7 +937,7 @@ export default function ChatTimeline({
                       <div className="space-y-4">
                         <div className="space-y-1">
                           <h4 className="font-extrabold text-slate-800 text-base">How can I help you today?</h4>
-                          <p className="text-slate-500 font-medium text-sm">I can search Kapruka products, check delivery, estimate import costs, or book home services.</p>
+                          <p className="text-slate-500 font-medium text-sm">I can search products, check delivery, estimate import costs, or book home services with our multi-agent workflow.</p>
                         </div>
                         <div className="space-y-2">
                           <p className="font-extrabold text-slate-800 text-sm">Try one of these 👇</p>

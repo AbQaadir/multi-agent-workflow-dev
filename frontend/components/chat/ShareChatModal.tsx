@@ -48,18 +48,18 @@ export default function ShareChatModal({ isOpen, onClose, url, chatTitle }: Shar
             <div className="h-32 w-full bg-slate-200 overflow-hidden relative flex items-center justify-center">
               {/* Optional nice gradient instead of image if no image available */}
               <div className="absolute inset-0 bg-gradient-to-br from-[#402970]/80 to-[#6a42c0] flex items-center justify-center">
-                <img src="/kapruka-logo.jpg" alt="Logo" className="h-10 opacity-90 rounded bg-white p-1" />
+                <img src="/workflow-logo.jpg" alt="Logo" className="h-10 opacity-90 rounded bg-white p-1" />
               </div>
             </div>
             <div className="p-3.5 bg-white border-t border-slate-200">
               <h4 className="text-[13px] font-bold text-slate-800 truncate mb-1">
-                {chatTitle || "Sourcing Chat"} | Kapruka AI
+                {chatTitle || "Sourcing Chat"} | Multi-Agent Workflow AI
               </h4>
               <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
-                View this shared Kapruka AI sourcing chat. Discover matched products and automated sourcing results instantly.
+                View this shared Multi-Agent Workflow sourcing chat. Discover matched products and automated sourcing results instantly.
               </p>
               <div className="mt-2 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                kapuruka-ai-shopping-agent.vercel.app
+                multi-agent-workflow.vercel.app
               </div>
             </div>
           </div>

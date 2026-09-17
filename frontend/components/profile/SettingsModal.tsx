@@ -37,11 +37,11 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
           <div className="flex flex-col items-center gap-4 text-center z-10 w-full">
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#402970] to-purple-500 flex items-center justify-center font-extrabold text-2xl text-white shrink-0 shadow-md">
-              KS
+              MW
             </div>
             <div className="space-y-1">
               <h4 className="text-base font-extrabold text-slate-800 tracking-tight leading-snug">Guest User</h4>
-              <p className="text-xs text-slate-400 font-medium leading-none">Kapruka AI Session</p>
+              <p className="text-xs text-slate-400 font-medium leading-none">Multi-Agent Workflow Session</p>
             </div>
           </div>
         </div>

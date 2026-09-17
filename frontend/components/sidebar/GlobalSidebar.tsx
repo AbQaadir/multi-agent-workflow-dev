@@ -125,7 +125,7 @@ export default function GlobalSidebar({
           }`}>
             <img
               src="/image.png"
-              alt="Kapruka Logo"
+              alt="Multi-Agent Workflow Logo"
               className="h-8 w-auto object-contain rounded-md"
             />
           </div>

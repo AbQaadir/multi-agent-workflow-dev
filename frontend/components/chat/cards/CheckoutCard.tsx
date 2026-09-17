@@ -5,7 +5,7 @@ import { MapPin, User, Phone, ShoppingBag, Plus, Minus, Loader2, CheckCircle, Ex
 import { useSourcingStore, useSourcingActions } from "@/store/useSourcingStore";
 import type { InlineProduct, CheckoutLink, CitySuggestion } from "@/types/sourcing";
 import { cleanProductTitle } from "@/lib/product";
-import { KAPRUKA_CITIES, KAPRUKA_CITIES_SET } from "@/constants/cities";
+import { DELIVERY_CITIES, DELIVERY_CITIES_SET } from "@/constants/cities";
 import { getApiUrl } from "@/services/apiClient";
 
 interface CheckoutCardProps {
@@ -134,7 +134,7 @@ export default function CheckoutCard({ product }: CheckoutCardProps) {
       const map = new MapClass(mapRef.current, {
         center: defaultLatLng,
         zoom: 14,
-        mapId: "kapruka_delivery_map",
+        mapId: "delivery_map",
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: false,
@@ -279,7 +279,7 @@ export default function CheckoutCard({ product }: CheckoutCardProps) {
     setCity(val);
     if (val.trim().length >= 1) {
       const searchVal = val.toLowerCase();
-      const filtered = KAPRUKA_CITIES.filter((c) =>
+      const filtered = DELIVERY_CITIES.filter((c) =>
         c.toLowerCase().includes(searchVal)
       )
       .slice(0, 10)
@@ -303,7 +303,7 @@ export default function CheckoutCard({ product }: CheckoutCardProps) {
       return;
     }
 
-    if (!KAPRUKA_CITIES_SET.has(city)) {
+    if (!DELIVERY_CITIES_SET.has(city)) {
       alert("Please select a valid city from the suggestions dropdown.");
       return;
     }
@@ -480,7 +480,7 @@ export default function CheckoutCard({ product }: CheckoutCardProps) {
                 onBlur={() => {
                   setTimeout(() => {
                     setCity(prev => {
-                      if (prev && !KAPRUKA_CITIES_SET.has(prev)) return "";
+                      if (prev && !DELIVERY_CITIES_SET.has(prev)) return "";
                       return prev;
                     });
                   }, 150);

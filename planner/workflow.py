@@ -15,15 +15,15 @@ from config import MODEL_NAME
 
 from state.conversation_state import SwarmState, ShoppingIntent, ThoughtStep
 
-logger = logging.getLogger("KaprukaSwarmWorkflow")
+logger = logging.getLogger("MultiAgentWorkflow")
 
-class KaprukaSwarmWorkflow:
+class MultiAgentWorkflow:
     """Live Google ADK Runner Workflow with SSE real-time streaming and exact product alignment."""
 
     def __init__(self):
         self.session_service = InMemorySessionService()
         self.runner = Runner(
-            app_name="kapruka_swarm_app",
+            app_name="multi_agent_workflow_app",
             agent=root_agent,
             session_service=self.session_service,
         )
@@ -36,7 +36,7 @@ class KaprukaSwarmWorkflow:
 
         if session_key not in self._active_sessions:
             adk_session = await self.session_service.create_session(
-                app_name="kapruka_swarm_app",
+                app_name="multi_agent_workflow_app",
                 user_id=session_key,
                 state={}
             )
@@ -71,7 +71,7 @@ class KaprukaSwarmWorkflow:
         # 1. Initial ConversationAgent Thought Step
         step_1 = {
             "agent": "ConversationAgent",
-            "detail": f"Received query: '{user_query}' with {len(selected_products or [])} selected items. Dispatching to ADK Swarm Orchestrator & Kapruka MCP.",
+            "detail": f"Received query: '{user_query}' with {len(selected_products or [])} selected items. Dispatching to ADK Swarm Orchestrator & MCP.",
             "timestamp": now_str
         }
         yield {"event": "thought_step", "data": step_1}
@@ -111,7 +111,7 @@ class KaprukaSwarmWorkflow:
                     call_queue.append(query_title)
 
                     # Map tool name to frontend step key
-                    step_id = "searching_kapruka"
+                    step_id = "searching_products"
                     if "check_delivery" in fn_name or "list_delivery" in fn_name:
                         step_id = "checking_delivery"
                     elif "track_order" in fn_name:
@@ -123,7 +123,7 @@ class KaprukaSwarmWorkflow:
                     elif "google_search" in fn_name:
                         step_id = "google_search_query"
 
-                    display_term = term_val if term_val else fn_name.replace("kapruka_", "").replace("_", " ")
+                    display_term = term_val if term_val else fn_name.replace("workflow_", "").replace("mcp_", "").replace("_", " ")
 
                     ts_event = {
                         "agent": "MCPToolset",
@@ -143,7 +143,7 @@ class KaprukaSwarmWorkflow:
                     current_query_title = call_queue.pop(0) if call_queue else "Product Search"
 
                     ts_event = {
-                        "agent": "KaprukaMCPServer",
+                        "agent": "MCPServer",
                         "detail": f"Received data payload from `{res_name}`.",
                         "timestamp": datetime.now().strftime("%H:%M:%S")
                     }
@@ -163,7 +163,7 @@ class KaprukaSwarmWorkflow:
                         ts_val_start = {
                             "agent": "ResponseValidator",
                             "step": "validating_relevance",
-                            "tool_name": "kapruka_search_products",
+                            "tool_name": "search_products",
                             "term": current_query_title,
                             "detail": f"Validating relevance of {len(extracted_items)} raw retrieved items for '{current_query_title}'...",
                             "timestamp": datetime.now().strftime("%H:%M:%S")
@@ -176,7 +176,7 @@ class KaprukaSwarmWorkflow:
                         ts_val_end = {
                             "agent": "ResponseValidator",
                             "step": "validating_relevance",
-                            "tool_name": "kapruka_search_products",
+                            "tool_name": "search_products",
                             "term": current_query_title,
                             "detail": f"LLM Relevance check complete: Approved {len(validated_items)} top matches out of {len(extracted_items)} raw items for '{current_query_title}'.",
                             "timestamp": datetime.now().strftime("%H:%M:%S")
@@ -236,7 +236,7 @@ class KaprukaSwarmWorkflow:
         yield {"event": "end", "data": {"status": "complete"}}
 
     def _parse_mcp_raw_products(self, raw_text: str) -> List[Dict[str, Any]]:
-        """Extract structured product items from Kapruka MCP tool response."""
+        """Extract structured product items from MCP tool response."""
         products = []
         if not raw_text:
             return products

@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="welcome-icon">
                     <i class="fa-solid fa-bag-shopping"></i>
                 </div>
-                <h1>What can I help you find on Kapruka today?</h1>
+                <h1>What can I help you find today?</h1>
                 <p>Search products, verify Sri Lanka delivery cities, track orders, or generate gift recommendations using our multi-agent swarm.</p>
             </div>
         `;
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (cursor) cursor.remove();
 
         } catch (err) {
-            appendErrorMessage("Failed to stream response from Kapruka Swarm server.");
+            appendErrorMessage("Failed to stream response from Multi-Agent Workflow server.");
         }
     }
 

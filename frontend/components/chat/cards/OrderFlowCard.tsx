@@ -3,7 +3,7 @@
 import { useSourcingStore, useSourcingActions } from "@/store/useSourcingStore";
 import type { CheckoutLink, InlineProduct, CitySuggestion } from "@/types/sourcing";
 import { cleanProductTitle } from "@/lib/product";
-import { KAPRUKA_CITIES, KAPRUKA_CITIES_SET } from "@/constants/cities";
+import { DELIVERY_CITIES, DELIVERY_CITIES_SET } from "@/constants/cities";
 import {
   AlertCircle,
   CheckCircle,
@@ -135,7 +135,7 @@ export default function OrderFlowCard({ product, stockStatus = "in_stock", stock
       const map = new MapClass(mapRef.current, {
         center: defaultLatLng,
         zoom: 14,
-        mapId: "kapruka_delivery_map",
+        mapId: "delivery_map",
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: false,
@@ -263,7 +263,7 @@ export default function OrderFlowCard({ product, stockStatus = "in_stock", stock
     setCity(val);
     if (val.trim().length >= 1) {
       const searchVal = val.toLowerCase();
-      const filtered = KAPRUKA_CITIES.filter((c) =>
+      const filtered = DELIVERY_CITIES.filter((c) =>
         c.toLowerCase().includes(searchVal)
       )
       .slice(0, 10)
@@ -298,7 +298,7 @@ export default function OrderFlowCard({ product, stockStatus = "in_stock", stock
       alert("Please fill in all delivery details before continuing.");
       return;
     }
-    if (!KAPRUKA_CITIES_SET.has(city)) {
+    if (!DELIVERY_CITIES_SET.has(city)) {
       alert("Please select a valid city from the suggestions dropdown.");
       return;
     }
@@ -644,7 +644,7 @@ export default function OrderFlowCard({ product, stockStatus = "in_stock", stock
               </div>
               <div className="flex-1">
                 <p className="text-xs font-bold text-slate-800">Credit / Debit Card</p>
-                <p className="text-[11px] text-slate-500 mt-0.5">Secure online payment via Kapruka checkout</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">Secure online payment via Multi-Agent Workflow checkout</p>
               </div>
               <ChevronRight size={16} className="text-slate-300 group-hover:text-[#402970] transition-colors" />
             </button>

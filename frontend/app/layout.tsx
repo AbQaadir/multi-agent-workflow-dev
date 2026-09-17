@@ -10,8 +10,8 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Kapruka.com AI Mode",
-  description: "All tasks in one ask, smart sourcing with AI. Go beyond search — let Kapruka Work handle your entire sourcing workflow.",
+  title: "Multi-Agent Workflow AI Mode",
+  description: "All tasks in one ask, smart sourcing with AI. Go beyond search — let Multi-Agent Workflow handle your entire sourcing workflow.",
 };
 
 export default function RootLayout({

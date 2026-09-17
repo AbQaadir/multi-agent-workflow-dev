@@ -24,7 +24,7 @@ import {
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useSourcingStore, useSourcingActions } from "@/store/useSourcingStore";
 import { cleanProductTitle } from "@/lib/product";
-import { KAPRUKA_CITIES, KAPRUKA_CITIES_SET } from "@/constants/cities";
+import { DELIVERY_CITIES, DELIVERY_CITIES_SET } from "@/constants/cities";
 import DeliveryDateBubble from "./DeliveryDateBubble";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
@@ -461,7 +461,7 @@ function NewAddressFormBubble({ step, onAction, isActive = true }: OrderStepBubb
     setConfirmedCity(val);
     if (val.trim().length >= 1) {
       const searchVal = val.toLowerCase();
-      const filtered = KAPRUKA_CITIES.filter((c) =>
+      const filtered = DELIVERY_CITIES.filter((c) =>
         c.toLowerCase().includes(searchVal)
       )
       .slice(0, 10)
@@ -536,7 +536,7 @@ function NewAddressFormBubble({ step, onAction, isActive = true }: OrderStepBubb
 
   const handleConfirmForm = () => {
     if (submittedRef.current || !isActive) return;
-    if (!name.trim() || !phone.trim() || !confirmedAddress.trim() || !KAPRUKA_CITIES_SET.has(confirmedCity)) return;
+    if (!name.trim() || !phone.trim() || !confirmedAddress.trim() || !DELIVERY_CITIES_SET.has(confirmedCity)) return;
     
     submittedRef.current = true;
     setSubmitted(true);
@@ -548,7 +548,7 @@ function NewAddressFormBubble({ step, onAction, isActive = true }: OrderStepBubb
     onAction(`New address confirmed: ${name.trim()}|${phone.trim()}|${finalAddr}|${finalCity}`);
   };
 
-  const canConfirm = name.trim().length > 0 && phone.trim().length === 9 && KAPRUKA_CITIES_SET.has(confirmedCity) && confirmedAddress.trim().length > 0;
+  const canConfirm = name.trim().length > 0 && phone.trim().length === 9 && DELIVERY_CITIES_SET.has(confirmedCity) && confirmedAddress.trim().length > 0;
 
   return (
     <div className="w-full bg-white border border-slate-100 rounded-[20px] shadow-xs p-4 sm:p-5 animate-fadeInScale select-none mt-4">
@@ -601,7 +601,7 @@ function NewAddressFormBubble({ step, onAction, isActive = true }: OrderStepBubb
             onBlur={() => {
               setTimeout(() => {
                 setConfirmedCity(prev => {
-                  if (prev && !KAPRUKA_CITIES_SET.has(prev)) return "";
+                  if (prev && !DELIVERY_CITIES_SET.has(prev)) return "";
                   return prev;
                 });
               }, 150);
@@ -733,7 +733,7 @@ function MapOpenBubble({ step, onAction, isActive = true }: OrderStepBubbleProps
     setManualCity(val);
     if (val.trim().length >= 1) {
       const searchVal = val.toLowerCase();
-      const filtered = KAPRUKA_CITIES.filter((c) =>
+      const filtered = DELIVERY_CITIES.filter((c) =>
         c.toLowerCase().includes(searchVal)
       )
       .slice(0, 10)
@@ -830,7 +830,7 @@ function MapOpenBubble({ step, onAction, isActive = true }: OrderStepBubbleProps
       const map = new MapClass(mapRef.current, {
         center,
         zoom: 16,
-        mapId: "kapruka_order_map",
+        mapId: "order_map",
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: false,
@@ -970,7 +970,7 @@ function MapOpenBubble({ step, onAction, isActive = true }: OrderStepBubbleProps
     }
   };
 
-  const canConfirm = mapsLoadFailed ? (manualAddress.trim().length > 3 && KAPRUKA_CITIES_SET.has(manualCity)) : !!confirmedAddress;
+  const canConfirm = mapsLoadFailed ? (manualAddress.trim().length > 3 && DELIVERY_CITIES_SET.has(manualCity)) : !!confirmedAddress;
 
   return (
     <div className="w-full bg-white border border-slate-100 rounded-[20px] shadow-xs p-5 sm:p-6 animate-fadeInScale select-none mt-4">
@@ -1013,7 +1013,7 @@ function MapOpenBubble({ step, onAction, isActive = true }: OrderStepBubbleProps
                   onBlur={() => {
                     setTimeout(() => {
                       setManualCity(prev => {
-                        if (prev && !KAPRUKA_CITIES_SET.has(prev)) return "";
+                        if (prev && !DELIVERY_CITIES_SET.has(prev)) return "";
                         return prev;
                       });
                     }, 150);
@@ -1300,7 +1300,7 @@ function PaymentAskBubble({ step, onAction, isActive = true }: OrderStepBubblePr
                     )}
                   </div>
                   <p className="text-[11px] text-slate-500 font-medium mt-1 leading-normal">
-                    Pay securely online using Kapruka checkout
+                    Pay securely online using Multi-Agent Workflow checkout
                   </p>
                 </div>
               </div>
@@ -1311,7 +1311,7 @@ function PaymentAskBubble({ step, onAction, isActive = true }: OrderStepBubblePr
         {/* Pre-generated Checkout URL Section */}
         {step.checkoutUrl && (
           <div className="bg-[#402970]/5 border border-[#402970]/10 rounded-2xl p-4 flex flex-col gap-3 mt-1">
-            <h5 className="text-xs font-bold text-[#402970]">Kapruka Secure Checkout</h5>
+            <h5 className="text-xs font-bold text-[#402970]">Multi-Agent Workflow Secure Checkout</h5>
             <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
               Your secure checkout link is ready. Proceed to payment to complete your order.
             </p>
@@ -1378,7 +1378,7 @@ function ConfirmedBubble({ step, onAction, isActive = true }: OrderStepBubblePro
         {orderFailed ? (
           <div className="flex flex-col gap-3">
             <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
-              We encountered a connection issue while submitting your request to Kapruka order APIs.
+              We encountered a connection issue while submitting your request to order APIs.
             </p>
             {!isActive ? (
               <div className="w-full py-3 bg-[#402970]/10 text-[#402970] border border-[#402970]/15 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs select-none">
